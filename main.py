@@ -23,9 +23,9 @@ class Full_field():
         '''
 
         self.__start_field()
-        self.__set_origin_destination()
+        self.__set_origin_destination(x0=2,y0=1,xf=3,yf=0)
 
-        self.__set_obstacles()
+        # self.__set_obstacles()
         print(self.status)
         print(self.values)
 
@@ -93,7 +93,6 @@ class Full_field():
                     x1 = int(i)
                     y1 = int(j)
                     self.__set_value(x0, y0, x1, y1)
-        
 
     def __set_value(self, x0, y0, x1, y1):
         distance = ((x1 - x0) ** 2 + (y1 - y0) ** 2) ** (1 / 2)
