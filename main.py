@@ -21,17 +21,18 @@ class Full_field():
         -1 = to be checked next
         -2 = Obstacle
         '''
-
         self.__start_field()
-        self.__set_origin_destination(x0=2,y0=1,xf=3,yf=0)
-
-        # self.__set_obstacles()
+        self.__set_origin_destination()
+        self.__set_obstacles()
         print(self.status)
         print(self.values)
 
     def __start_field(self):
         self.values = np.zeros((cells_number, cells_number))
         self.status = np.zeros((cells_number, cells_number))
+        self.previous_cell = np.full(
+            (cells_number, cells_number), tuple)
+        self.final_path = np.zeros((cells_number, cells_number))
 
     def __set_obstacles(self, number_of_obstacles=cells_number):
         """
@@ -82,8 +83,10 @@ class Full_field():
         pos = np.argmin(node_values)
         closest_node = tuple(node_pos[pos])
         print('Node to be set as solved', closest_node)
+
         self.status[closest_node] = 1
-        print('Test status', self.status)
+
+        print('Test previous_cell', self.previous_cell)
 
     def find_next_node(self, x0, y0):
         for i in [x0 - 1, x0, x0 + 1]:
@@ -102,8 +105,30 @@ class Full_field():
                  (cumulative_distance < self.values[x1, y1])):
             self.values[x1, y1] = cumulative_distance
             self.status[x1, y1] = -1
+            self.previous_cell[x1, y1] = (x0, y0)
+
+    def show_path(self):
+        print(self.previous_cell)
+        x = self.xf
+        y = self.yf
+
+        while (x != self.x0) & (y != self.y0):
+            self.final_path[x, y] = 1
+            x,y = self.previous_cell[x, y]
+
+        print("This is the shortest path from ", self.x0, self.y0,
+              "to", self.xf, self.yf, "\n", self.final_path)
+
+
+class individual_cell():
+    def __init__(self):
+        self.position = tuple()
+        self.previous = tuple()
+        self.distance_value = 0
+        self.status = 0
 
 
 if __name__ == "__main__":
     root = Full_field()
-    Full_field.find_shortest_path(root)
+    root.find_shortest_path()
+    root.show_path()
