@@ -1,7 +1,7 @@
 import numpy as np
 import random
 
-cells_number = 6
+cells_number = 10
 
 
 """
@@ -15,15 +15,14 @@ D* Algorithm
 class Full_field():
     def __init__(self):
         '''
-        Status: 
+        Status:
         1 = solved
         0 = not visited
         -1 = to be checked next
         -2 = Obstacle
+        3 = shortest path
         '''
         self.__start_field()
-        self.__set_origin_destination()
-        self.__set_obstacles()
         print(self.status)
         print(self.values)
 
@@ -32,21 +31,26 @@ class Full_field():
         self.status = np.zeros((cells_number, cells_number))
         self.previous_cell = np.full(
             (cells_number, cells_number), tuple)
-        self.final_path = np.zeros((cells_number, cells_number))
 
-    def __set_obstacles(self, number_of_obstacles=cells_number):
+    def set_obstacles(
+            self, obstacle_positions=[], number_of_obstacles=cells_number):
         """
-        Obstacles will be flagged as cells of value -1
+        Obstacles will be flagged as cells of value -2
         """
-        _ = 0
-        while _ < number_of_obstacles:
-            i = random.randint(0, cells_number - 1)
-            j = random.randint(0, cells_number - 1)
-            if self.status[i, j] != 1:
-                self.status[i, j] = -2
-            _ += 1
+        if obstacle_positions == []:
+            _ = 0
+            while _ < number_of_obstacles:
+                i = random.randint(0, cells_number - 1)
+                j = random.randint(0, cells_number - 1)
+                if self.status[i, j] != 1:
+                    self.status[i, j] = -2
+                _ += 1
+        else:
+            for pos in obstacle_positions:
+                if self.status[pos] != 1:
+                    self.status[pos] = -2
 
-    def __set_origin_destination(
+    def set_origin_destination(
             self, x0=0, y0=0, xf=cells_number - 1, yf=cells_number - 1
     ):
         self.x0 = x0
@@ -55,6 +59,7 @@ class Full_field():
         self.yf = yf
 
         self.status[x0, y0] = 1
+        self.status[xf,yf] = 2
 
     def find_shortest_path(self):
         while self.status[self.xf, self.yf] != 1:
@@ -86,8 +91,6 @@ class Full_field():
 
         self.status[closest_node] = 1
 
-        print('Test previous_cell', self.previous_cell)
-
     def find_next_node(self, x0, y0):
         for i in [x0 - 1, x0, x0 + 1]:
             for j in [y0 - 1, y0, y0 + 1]:
@@ -100,7 +103,7 @@ class Full_field():
     def __set_value(self, x0, y0, x1, y1):
         distance = ((x1 - x0) ** 2 + (y1 - y0) ** 2) ** (1 / 2)
         cumulative_distance = self.values[x0, y0] + distance
-        if (self.status[x1, y1] == 0) | \
+        if (self.status[x1, y1] in [0,2]) | \
                 (self.status[x1, y1] == -1 &
                  (cumulative_distance < self.values[x1, y1])):
             self.values[x1, y1] = cumulative_distance
@@ -112,23 +115,22 @@ class Full_field():
         x = self.xf
         y = self.yf
 
-        while (x != self.x0) & (y != self.y0):
-            self.final_path[x, y] = 1
-            x,y = self.previous_cell[x, y]
+        while (x != self.x0) | (y != self.y0):
+            self.status[x, y] = 3
+            x, y = self.previous_cell[x, y]
 
         print("This is the shortest path from ", self.x0, self.y0,
-              "to", self.xf, self.yf, "\n", self.final_path)
+              "to", self.xf, self.yf, "\n", self.status)
 
 
-class individual_cell():
+class Find_Path(Full_field):
     def __init__(self):
-        self.position = tuple()
-        self.previous = tuple()
-        self.distance_value = 0
-        self.status = 0
+        Full_field.__init__(self)
+        self.set_origin_destination()
+        self.set_obstacles()
+        self.find_shortest_path()
+        self.show_path()
 
 
 if __name__ == "__main__":
-    root = Full_field()
-    root.find_shortest_path()
-    root.show_path()
+    Find_Path()
