@@ -16,12 +16,15 @@ class StartUI:
         self.x0, self.y0, self.xf, self.yf = -1, -1, -1, -1
 
         self.Field = Full_field()
-
-        # self.__draw_obstacles()
-
-        # Initialize the GUI
         self.master = master
         master.title("Path finder")
+
+        # Initialize the GUI
+        try:
+            self.canvas.destroy()
+        except:
+            pass
+
         self.canvas = Canvas(master, width=WIDTH, height=HEIGHT, bg="white")
         self.canvas.pack(fill=BOTH, side=BOTTOM)
 
@@ -55,24 +58,23 @@ class StartUI:
 
             self.start_button = Button(
                 self.master, text="Find the shortest path",
-                fg='purple', command=self.__start_path_finding)
+                fg='green', command=self.__start_path_finding)
             self.start_button.pack(side=BOTTOM)
 
         self.__draw_box()
 
     def __start_path_finding(self):
+        self.label.config(text="Finding the shortest path...")
+        self.start_button.config(text="Restart", command=self.__init__(self.master))
         if self.Field.status[self.xf, self.yf] != 1:
             self.Field.solve_one_step()
             self.__draw_box()
-            time.sleep(1)
             self.Field.min_closest_node()
             self.__draw_box()
-            self.canvas.after(700, self.__start_path_finding)
+            self.canvas.after(200, self.__start_path_finding)
         else:
             self.Field.show_path()
             self.__draw_box()
-
-        
 
     def __draw_obstacles(self):
         if self.selected_row != -1 and self.selected_column != -1:
@@ -94,7 +96,7 @@ class StartUI:
                 if self.Field.status[row, column] == 0:
                     color = "white"
                 elif self.Field.status[row, column] == 1:
-                    color = "blue"
+                    color = "light grey"
                 elif self.Field.status[row, column] == 2:
                     color = "yellow"
                 elif self.Field.status[row, column] == -1:
@@ -109,6 +111,22 @@ class StartUI:
                 y1 = MARGIN + (column + 1) * SIDE - 1
                 self.canvas.create_rectangle(
                     x0, y0, x1, y1, fill=color, outline="black", tags="cells")
+        if self.x0 != -1 and self.y0 != -1:
+            x0 = MARGIN + self.x0 * SIDE + 1
+            y0 = MARGIN + self.y0 * SIDE + 1
+            x1 = MARGIN + (self.x0 + 1) * SIDE - 1
+            y1 = MARGIN + (self.y0 + 1) * SIDE - 1
+            self.canvas.create_rectangle(
+                x0, y0, x1, y1, outline="red")
+
+        if self.xf != -1 and self.yf != -1:
+            x0 = MARGIN + self.xf * SIDE + 1
+            y0 = MARGIN + self.yf * SIDE + 1
+            x1 = MARGIN + (self.xf + 1) * SIDE - 1
+            y1 = MARGIN + (self.yf + 1) * SIDE - 1
+            self.canvas.create_rectangle(
+                x0, y0, x1, y1, outline="green")
+        self.__draw_distance_value()
 
     def canvas_click(self, event):
         '''
@@ -133,14 +151,25 @@ class StartUI:
         '''
         Draw red box around the cell selected
         '''
-        self.canvas.delete("red_square")
+        self.canvas.delete("purple_square")
         if self.selected_row >= 0 and self.selected_column >= 0:
             x0 = MARGIN + self.selected_row * SIDE + 1
             y0 = MARGIN + self.selected_column * SIDE + 1
             x1 = MARGIN + (self.selected_row + 1) * SIDE - 1
             y1 = MARGIN + (self.selected_column + 1) * SIDE - 1
             self.canvas.create_rectangle(
-                x0, y0, x1, y1, outline="red", tags="red_square")
+                x0, y0, x1, y1, outline="purple", tags="purple_square")
+
+    def __draw_distance_value(self):
+        for i in range(0, cells_number):
+            for j in range(0, cells_number):
+                number = self.Field.values[i, j]
+                if number != 0:
+                    number = "{:.1f}".format(number)
+                    x = MARGIN + SIDE / 2 + i * SIDE
+                    y = MARGIN + SIDE / 2 + j * SIDE
+                    self.canvas.create_text(
+                        x, y, text=number, tags="numbers", fill="black")
 
 
 if __name__ == "__main__":
