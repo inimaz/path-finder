@@ -3,6 +3,8 @@ import random
 import logging
 import logging.config
 
+#logging.disable()
+
 logging.config.fileConfig('logging.conf')
 
 # create logger
@@ -10,7 +12,7 @@ logger = logging.getLogger('simpleExample')
 
 
 # Setting the size of the field
-cells_number = 15
+cells_number = 12
 
 
 """
@@ -84,6 +86,7 @@ class Full_field():
                 D* Algorithm algorithm = D*
         """
         self.algorithm = algorithm
+        logger.debug("Algorithm has been set to " + str(algorithm))
 
     def find_shortest_path(self):
         while self.status[self.xf, self.yf] != 1:
@@ -139,7 +142,8 @@ class Full_field():
             distance_to_destination = self.__distance_between(
                 x1, y1, self.xf, self.yf)
         elif self.algorithm == "Di":
-            distance_to_destination = distance_to_destination_x0 = 0
+            distance_to_destination = 0
+            distance_to_destination_x0 = 0
         cumulative_distance = self.values[x0, y0] - distance_to_destination_x0 + \
             distance_to_origin + distance_to_destination
         if (self.status[x1, y1] in [0, 2]) or \

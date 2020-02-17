@@ -1,4 +1,4 @@
-from tkinter import Tk, Canvas, Frame, Label, Button, BOTH, TOP, BOTTOM, LEFT, RIGHT
+from tkinter import Tk, Canvas, Frame, Label, Button, BOTH, TOP, BOTTOM, LEFT, RIGHT, Radiobutton, StringVar
 from main import Full_field, cells_number
 import time
 
@@ -10,35 +10,66 @@ WIDTH = HEIGHT = MARGIN * 2 + SIDE * cells_number
 
 class StartUI:
     def __init__(self, master):
-        # Initialize values
-        self.selected_column = -1
-        self.selected_row = -1
-        self.x0, self.y0, self.xf, self.yf = -1, -1, -1, -1
 
-        self.Field = Full_field()
         self.master = master
         master.title("Path finder")
-
-        # Initialize the GUI
-        try:
-            self.canvas.destroy()
-        except:
-            pass
-
-        self.canvas = Canvas(master, width=WIDTH, height=HEIGHT, bg="white")
-        self.canvas.pack(fill=BOTH, side=BOTTOM)
 
         self.frame = Frame(master)
         self.frame.pack(side=TOP)
 
+        self.right_frame = Frame(master)
+        self.right_frame.pack(side=RIGHT)
+
+        self.__start_all_values()
+
+    def __start_all_values(self):
+        # Initialize values
+        self.selected_column = -1
+        self.selected_row = -1
+        self.x0, self.y0, self.xf, self.yf = -1, -1, -1, -1
+        self.Field = Full_field()
+        # Initialize the GUI
+        try:
+            self.canvas.destroy()
+            self.start_button.destroy()
+            self.label.destroy()
+            self.algorithm_label.destroy()
+            self.algorithm_radio_button.destroy()
+            self.algorithm_radio_button2.destroy()
+        except:
+            pass
+
+        self.canvas = Canvas(self.master, width=WIDTH,
+                             height=HEIGHT, bg="white")
+        self.canvas.pack(fill=BOTH, side=BOTTOM)
+        self.label = Label(
+            self.frame, text="Please, select the origin")
+        self.label.pack(side=TOP)
+
+
+
         self.canvas.bind("<Button-1>", self.canvas_click)
         self.__draw_box()
 
+        self.var = StringVar(root, "A*")
+        self.algorithm_radio_button = Radiobutton(
+            self.right_frame, indicatoron=0, text="Dijkstra’s",
+            variable=self.var, value="Di",
+            command=self.__select_algorithm)
+        self.algorithm_radio_button2 = Radiobutton(
+            self.right_frame, indicatoron=0, text="A*", variable=self.var,
+            value="A*", command=self.__select_algorithm)
+        self.algorithm_radio_button.pack(side=RIGHT)
+        self.algorithm_radio_button2.pack(side=RIGHT)
+        self.algorithm_label = Label(
+            self.right_frame, text="Search algorithm")
+        self.algorithm_label.pack(side=RIGHT)
+
+    def __select_algorithm(self):
+        self.Field.select_algorithm(self.var.get())
+
     def __set_origin_destination(self):
         if self.x0 == -1 and self.y0 == -1:
-            self.label = Label(
-                self.frame, text="Please, select the origin")
-            self.label.pack(side=TOP)
             if self.selected_row != -1 and self.selected_column != -1:
                 self.x0 = self.selected_row
                 self.y0 = self.selected_column
@@ -65,7 +96,8 @@ class StartUI:
 
     def __start_path_finding(self):
         self.label.config(text="Finding the shortest path...")
-        self.start_button.config(text="Restart", command=self.__init__(self.master))
+        self.start_button.config(
+            text="Restart", command=self.__start_all_values)
         if self.Field.status[self.xf, self.yf] != 1:
             self.Field.solve_one_step()
             self.__draw_box()
@@ -75,6 +107,7 @@ class StartUI:
         else:
             self.Field.show_path()
             self.__draw_box()
+            self.label.config(text="This is the shortest path")
 
     def __draw_obstacles(self):
         if self.selected_row != -1 and self.selected_column != -1:
