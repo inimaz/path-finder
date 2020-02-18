@@ -135,7 +135,7 @@ class Full_field():
                     self.__set_value(x0, y0, x1, y1)
 
     def __set_value(self, x0, y0, x1, y1):
-        distance_to_origin = self.__distance_between(x0, y0, x1, y1)
+        distance_to_previous = self.__distance_between(x0, y0, x1, y1)
         if self.algorithm == "A*":
             distance_to_destination_x0 = self.__distance_between(
                 x0, y0, self.xf, self.yf)
@@ -145,7 +145,7 @@ class Full_field():
             distance_to_destination = 0
             distance_to_destination_x0 = 0
         cumulative_distance = self.values[x0, y0] - distance_to_destination_x0 + \
-            distance_to_origin + distance_to_destination
+            distance_to_previous + distance_to_destination
         if (self.status[x1, y1] in [0, 2]) or \
                 ((self.status[x1, y1] == -1) and
                  (cumulative_distance < self.values[x1, y1])):

@@ -1,6 +1,6 @@
-from tkinter import Tk, Canvas, Frame, Label, Button, BOTH, TOP, BOTTOM, LEFT, RIGHT, Radiobutton, StringVar
+from tkinter import Tk, Canvas, Frame, Label, Button, BOTH,\
+    TOP, BOTTOM, RIGHT, Radiobutton, StringVar
 from main import Full_field, cells_number
-import time
 
 MARGIN = 20  # Pixels around the board
 SIDE = 30  # Width of every board cell.
@@ -46,8 +46,6 @@ class StartUI:
             self.frame, text="Please, select the origin")
         self.label.pack(side=TOP)
 
-
-
         self.canvas.bind("<Button-1>", self.canvas_click)
         self.__draw_box()
 
@@ -59,11 +57,11 @@ class StartUI:
         self.algorithm_radio_button2 = Radiobutton(
             self.right_frame, indicatoron=0, text="A*", variable=self.var,
             value="A*", command=self.__select_algorithm)
-        self.algorithm_radio_button.pack(side=RIGHT)
-        self.algorithm_radio_button2.pack(side=RIGHT)
+        self.algorithm_radio_button.grid(column=0, row=1)
+        self.algorithm_radio_button2.grid(column=0, row=2)
         self.algorithm_label = Label(
             self.right_frame, text="Search algorithm")
-        self.algorithm_label.pack(side=RIGHT)
+        self.algorithm_label.grid(column=0, row=0)
 
     def __select_algorithm(self):
         self.Field.select_algorithm(self.var.get())
