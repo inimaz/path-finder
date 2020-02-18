@@ -9,7 +9,10 @@ So far the options are:
 Run main.py to see the pure BE version of the path-finding algorithm.
 Run GUI.py to see the UI.
 Place the starting point and end point. Then place any obstacle you desire.
-Then hit the button to solve it and show the shortest path
+Then hit the button to solve it and show the shortest path.
+
+If you do not want to download it and install the dependencies, you can try it in Gitpod
+[![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/inimaz/path-finder) 
 
 ## Example
 ![alt text](./images/preview.png "Example")
@@ -24,11 +27,12 @@ As you may have seen, once you run the scenario, there are some numbers that are
 2. Set all the cells that are next to the solved points as "to be visited".
 3. Calculate the cumulative_distance to each "to be visited" point, using the following formula:
 
-**Cumulative distance (A*)**
+__Cumulative distance (A*)__\n
+
 cumulative_distance (x2,y2) = cumulative_distance(x1,y1) + distance_to_previous(x2,y2) + distance_to_destination(x2,y2) - distance_to_destination(x1,y1)
 
 4. From all the "to be visited" points, set as solved the one with the lower cumulative_distance. If it's a tie, we choose one randomly.
-4.1 For the solved cell, store the cell that solved it, the cell that selected it as "to be visited"
+⋅⋅⋅4.1 For the solved cell, store the cell that solved it, the cell that selected it as "to be visited"
 5. Repeat 2, 3, 4 until the final destination is set as solved.
 
 Like this, cumulative distance is the sum of all the cumulative_distances from the beginning to each point.
@@ -41,7 +45,7 @@ distance = ((x1-x0)^2 + (y1-y0)^2) ^ (1/2)
 Dijkstra will be a special case of A*, the case on which we have no information at all of where the destination is.
 That said, the cumulative distance formula would be 
 
-**Cumulative distance (Dijkstra)**
+**Cumulative distance (Dijkstra)**\n
 cumulative_distance (x2,y2) = cumulative_distance(x1,y1) + distance_to_previous(x2,y2)
 
 As you see, there is no distance to destination
@@ -55,3 +59,4 @@ Therefore, we:
 2. Set it as path.
 3. Check the cell that solved it.
 4. Repeat steps 2 and 3 until the cell is the origin cell.
+
